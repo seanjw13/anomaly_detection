@@ -48,11 +48,12 @@ with DAG(
             'num_workers': 1,
         },
         'notebook_task': {
-            'notebook_path': f'{repo_path}/hello_airflow',
+            'notebook_path': f'{repo_path}/notebooks/hello_airflow',
             'base_parameters': {'output': 'Hello world!'},
         },
     }
 
+    # Call a one time notebook task in Databricks. 
     notebook_task = DatabricksSubmitRunOperator(task_id='notebook_task', json=notebook_task_params)
 
     (update_repo >> notebook_task)
