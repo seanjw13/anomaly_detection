@@ -30,10 +30,10 @@ default_args = {
 
 with DAG(
     dag_id='anomaly_detection_dag',
-    start_date=datetime(2022, 4, 25),
+    start_date=datetime(2022, 4, 27),
     schedule_interval='@yearly',
     default_args=default_args,
-    tags=['example'],
+    tags=['databricks', 'anomaly_detection'],
     catchup=False,
 ) as dag:
 
@@ -49,6 +49,7 @@ with DAG(
         },
         'notebook_task': {
             'notebook_path': f'{repo_path}/hello_airflow',
+            'base_parameters': {'output': 'Hello world!'},
         },
     }
 

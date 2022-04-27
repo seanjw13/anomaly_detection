@@ -266,13 +266,5 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-  conn-create:
-    <<: *airflow-common
-    command: airflow connections add 'databricks' --conn-uri 'databricks://@https://416411475796958.8.gcp.databricks.com/?token=dapi5906c4292c2aa9759d7fb9a56dc206d8'
-    depends_on:
-      <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
-
 volumes:
   postgres-db-volume:
