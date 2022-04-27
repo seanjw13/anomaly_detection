@@ -1,2 +1,6 @@
 # Databricks notebook source
-print('Called from Airflow!')
+output = dbutils.widgets.get('output')
+
+# COMMAND ----------
+
+print(output)
