@@ -9,3 +9,4 @@ This example demonstrates how to use the [Databricks Operators for Airflow](http
 4. Run the CLI command `docker-compose up` to start up the containers running Airflow.
 5. Navigate to http://localhost:8080/ in your web browser. It will ask you to log in. Username: airflow, Password: airflow.
 6. Add a [Databricks Connection to Airflow](https://airflow.apache.org/docs/apache-airflow-providers-databricks/stable/connections/databricks.html). Navigate to 'Admin' then 'Connections'. Add a new connection with the conn_id of 'databricks' that contains the Databricks Personal Access Token (PAT) to use.
+7. When you are done using Airflow, run `docker-compose down` in the airflow folder to shut down all running containers.
