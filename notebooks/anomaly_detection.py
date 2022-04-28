@@ -69,7 +69,7 @@ X[1, :], y[0, :]
 
 # COMMAND ----------
 
-n_timesteps = 48
+n_timesteps = int(dbutils.widgets.get('n_timesteps_param'))
 n_samples = X_train.shape[0]
 n_features = X_train.shape[1]
 n_val_samples = X_val.shape[0]
@@ -141,8 +141,11 @@ model.summary()
 
 # COMMAND ----------
 
+batch_size = int(dbutils.widgets.get('batch_size_param'))
+epochs = int(dbutils.widgets.get('epochs_param'))
+
 model = Autoencoder(n_timesteps, n_features)
-history = model.fit(x=X_train, y=y_train, batch_size=128, epochs=10, verbose=1,
+history = model.fit(x=X_train, y=y_train, batch_size=batch_size, epochs=epochs, verbose=1,
                     callbacks=None, validation_data=(X_val, y_val), shuffle=False)
 
 # COMMAND ----------
