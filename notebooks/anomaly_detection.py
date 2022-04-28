@@ -23,7 +23,30 @@
 
 # COMMAND ----------
 
-data = pd.read_csv('https://raw.githubusercontent.com/numenta/NAB/master/data/realKnownCause/machine_temperature_system_failure.csv')
+# MAGIC %md 
+# MAGIC 
+# MAGIC ####Select the training data frame based on the input parameters
+
+# COMMAND ----------
+
+dbutils.widgets.dropdown("data_source", "Delta Lake", ["BigQuery", "Delta Lake"])
+dbutils.widgets.text("delta_lake_table", "")
+dbutils.widgets.text("bigquery_table", "")
+
+# COMMAND ----------
+
+if dbutils.widgets.get("data_source") == "Delta Lake":
+  
+  table = dbutils.widgets.get("delta_lake_table")
+else:
+  
+  table = dbutils.widgets.get("bigquery_table")
+
+# COMMAND ----------
+
+#data = pd.read_csv('https://raw.githubusercontent.com/numenta/NAB/master/data/realKnownCause/machine_temperature_system_failure.csv')
+df = spark.table(table)
+data = df.toPandas()
 data.shape
 
 # COMMAND ----------
