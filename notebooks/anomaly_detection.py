@@ -44,7 +44,6 @@ else:
 
 # COMMAND ----------
 
-#data = pd.read_csv('https://raw.githubusercontent.com/numenta/NAB/master/data/realKnownCause/machine_temperature_system_failure.csv')
 df = spark.table(table)
 data = df.toPandas()
 data.shape
