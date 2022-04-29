@@ -29,23 +29,42 @@
 
 # COMMAND ----------
 
-dbutils.widgets.dropdown("data_source", "Delta Lake", ["BigQuery", "Delta Lake"])
-dbutils.widgets.text("delta_lake_table", "")
-dbutils.widgets.text("bigquery_table", "")
+# Create widgets to select the data source.
+#dbutils.widgets.dropdown("data_source", "Delta Lake", ["BigQuery", "Delta Lake"])
+#dbutils.widgets.text("delta_lake", "")
+#dbutils.widgets.text("bigquery", "")
+
+# Create widgets to accept input hyperparameters.
+#dbutils.widgets.text('n_timesteps_param', '48')
+#dbutils.widgets.text('batch_size_param', '128')
+#dbutils.widgets.text('epochs_param', '10')
 
 # COMMAND ----------
 
-if dbutils.widgets.get("data_source") == "Delta Lake":
-  
-  table = dbutils.widgets.get("delta_lake_table")
-else:
-  
-  table = dbutils.widgets.get("bigquery_table")
+import json
 
-# COMMAND ----------
+try:
+  if dbutils.widgets.get("data_source") == "Delta Lake":
+    # Create data frame from Delta Lake
+    dl = json.loads(dbutils.widgets.get("delta_lake"))
+    df = spark.table(dl["delta_table"])
 
-df = spark.table(table)
+  else:
+    # Create data frame from BigQuery
+    bq = dbutils.widgets.get("bigquery")
+    data = spark.read.format("bigquery") \
+    .option("table", bq["table"]) \
+    .option("project", bq["project"]) \
+    .option("parentProject", bq["parent"]) \
+    .load()
+
+except:
+  dbutils.notebooks.exit("Failed to read input parameters correctly! Check the format of input parameters!")
+  
 data = df.toPandas()
+
+# COMMAND ----------
+
 data.shape
 
 # COMMAND ----------
@@ -261,4 +280,4 @@ print(result)
 
 # COMMAND ----------
 
-
+dbutils.notebook.exit("Notebook completed successfully!")
