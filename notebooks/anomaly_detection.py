@@ -23,6 +23,11 @@
 
 # COMMAND ----------
 
+# MAGIC %sql
+# MAGIC SELECT * FROM sewi_database.sewi_anomalies LIMIT 5
+
+# COMMAND ----------
+
 # MAGIC %md 
 # MAGIC 
 # MAGIC ####Select the training data frame based on the input parameters
@@ -43,23 +48,20 @@
 
 import json
 
-try:
-  if dbutils.widgets.get("data_source") == "Delta Lake":
-    # Create data frame from Delta Lake
-    dl = json.loads(dbutils.widgets.get("delta_lake"))
-    df = spark.table(dl["delta_table"])
+if dbutils.widgets.get("data_source") == "Delta Lake":
+  # Create data frame from Delta Lake
+  dl = json.loads(dbutils.widgets.get("delta_lake"))
+  df = spark.table(dl["delta_table"])
 
-  else:
-    # Create data frame from BigQuery
-    bq = dbutils.widgets.get("bigquery")
-    data = spark.read.format("bigquery") \
-    .option("table", bq["table"]) \
-    .option("project", bq["project"]) \
-    .option("parentProject", bq["parent"]) \
-    .load()
+else:
+  # Create data frame from BigQuery
+  bq = dbutils.widgets.get("bigquery")
+  data = spark.read.format("bigquery") \
+  .option("table", bq["table"]) \
+  .option("project", bq["project"]) \
+  .option("parentProject", bq["parent"]) \
+  .load()
 
-except:
-  dbutils.notebooks.exit("Failed to read input parameters correctly! Check the format of input parameters!")
   
 data = df.toPandas()
 
