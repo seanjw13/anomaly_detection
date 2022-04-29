@@ -16,12 +16,20 @@
 # under the License.
 
 from datetime import datetime
+import json
 
 from airflow import DAG
+from airflow.operators.dummy import DummyOperator
 from airflow.providers.databricks.operators.databricks import DatabricksSubmitRunOperator
-from airflow.providers.databricks.operators.databricks_repos import (
-    DatabricksReposUpdateOperator,
-)
+from airflow.providers.databricks.operators.databricks_repos import DatabricksReposUpdateOperator
+
+github_user = "sean.wilkinson@databricks.com"
+notebook_name = "anomaly_detection"
+
+dl_settings = json.dumps({"delta_table": "sewi_anomalies"})
+bq_settings = json.dumps({"table": "sewi_anomalies", 
+                          "project": "databricks", 
+                          "parent": "data_engineer"})
 
 default_args = {
     'owner': 'airflow',
@@ -38,22 +46,32 @@ with DAG(
 ) as dag:
 
     # Example of updating a Databricks Repo to the latest code
-    repo_path = "/Repos/sean.wilkinson@databricks.com/anomaly_detection"
+    repo_path = f"/Repos/{github_user}/anomaly_detection"
     update_repo = DatabricksReposUpdateOperator(task_id='update_repo', repo_path=repo_path, branch="main")
+
+    # Dummy operator to symbolize data preprocessing step
+    data_prep = DummyOperator(task_id='data_prep')
 
     notebook_task_params = {
         'new_cluster': {
             'spark_version': '10.4.x-cpu-ml-scala2.12',
-            'node_type_id': 'n1-standard-4',
+            'node_type_id': 'n1-standard-16',
             'num_workers': 1,
         },
         'notebook_task': {
-            'notebook_path': f'{repo_path}/notebooks/hello_airflow',
-            'base_parameters': {'output': 'Hello world!'},
+            'notebook_path': f'{repo_path}/notebooks/{notebook_name}',
+            'base_parameters': {
+                'n_timesteps_param': 48,
+                'batch_size_param': 128,
+                'epochs_param': 10,
+                'data_source': 'Delta Lake',
+                'delta_lake': dl_settings,
+                'big_query': bq_settings,
+            },
         },
     }
 
     # Call a one time notebook task in Databricks. 
     notebook_task = DatabricksSubmitRunOperator(task_id='notebook_task', json=notebook_task_params)
 
-    (update_repo >> notebook_task)
+    (update_repo >> data_prep >> notebook_task)
