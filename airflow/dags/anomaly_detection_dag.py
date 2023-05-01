@@ -23,7 +23,7 @@ from airflow.operators.dummy import DummyOperator
 from airflow.providers.databricks.operators.databricks import DatabricksSubmitRunOperator
 from airflow.providers.databricks.operators.databricks_repos import DatabricksReposUpdateOperator
 
-github_user = "sean.wilkinson@databricks.com"
+github_user = "<email_address>"
 notebook_name = "anomaly_detection"
 
 dl_settings = json.dumps({"delta_table": "hive_metastore.sewi_database.anomaly_detection"})
