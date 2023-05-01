@@ -23,10 +23,10 @@ from airflow.operators.dummy import DummyOperator
 from airflow.providers.databricks.operators.databricks import DatabricksSubmitRunOperator
 from airflow.providers.databricks.operators.databricks_repos import DatabricksReposUpdateOperator
 
-github_user = ""
+github_user = "<email_address>"
 notebook_name = "anomaly_detection"
 
-dl_settings = json.dumps({"delta_table": "sewi_anomalies"})
+dl_settings = json.dumps({"delta_table": "hive_metastore.sewi_database.anomaly_detection"})
 bq_settings = json.dumps({"table": "sewi_anomalies", 
                           "project": "databricks", 
                           "parent": "data_engineer"})
@@ -55,7 +55,7 @@ with DAG(
     notebook_task_params = {
         'new_cluster': {
             'spark_version': '10.4.x-cpu-ml-scala2.12',
-            'node_type_id': 'n1-standard-16',
+            'node_type_id': 'm5d.xlarge',
             'num_workers': 1,
         },
         'notebook_task': {
